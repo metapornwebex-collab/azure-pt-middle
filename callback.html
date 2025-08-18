@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redirecting...</title>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+</head>
+<body>
+  <h2>🔁 Redirecting based on role...</h2>
+  <script>
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const idToken = params.get("id_token");
+
+    if (!idToken) {
+      document.body.innerHTML = "<h2>❌ Access Denied</h2>";
+      throw new Error("No token");
+    }
+
+    const decoded = jwt_decode(idToken);
+    const roles = decoded.roles || [];
+
+    if (roles.includes("HR.Access")) {
+      window.location.href = "https://your-hr-app.com";
+    } else if (roles.includes("Finance.Manager")) {
+      window.location.href = "https://your-finance-app.com";
+    } else {
+      document.body.innerHTML = "<h2>❌ You do not have permission</h2>";
+    }
+  </script>
+</body>
+</html>
