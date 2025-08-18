@@ -8,17 +8,17 @@
     {
       "route": "/admin",
       "allowedRoles": ["Admin"],
-      "serve": "https://<admin-app>.azurestaticapps.net"
+      "serve": "https://salmon-tree-0bec8db00.2.azurestaticapps.net"
     },
     {
       "route": "/sales",
       "allowedRoles": ["Sales"],
-      "serve": "https://<sales-app>.azurestaticapps.net"
+      "serve": "https://witty-hill-046f15c00.1.azurestaticapps.net"
     },
     {
       "route": "/user",
       "allowedRoles": ["User"],
-      "serve": "https://<user-app>.azurestaticapps.net"
+      "serve": "https://red-field-013434800.1.azurestaticapps.net"
     },
     {
       "route": "/login",
