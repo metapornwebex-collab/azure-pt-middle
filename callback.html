@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Callback</title>
+</head>
+<body>
+  <h2>Redirecting...</h2>
+
+  <script>
+    // ตรวจสอบการ login
+    fetch("/.auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        const user = data.clientPrincipal;
+
+        if (!user) {
+          window.location.href = "/index.html";
+        }
+
+        const roles = user.userRoles;
+
+        // Redirect ตาม role
+        if (roles.includes("Admin")) {
+          window.location.href = "/admin";
+        } else if (roles.includes("Sales")) {
+          window.location.href = "/sales";
+        } else if (roles.includes("User")) {
+          window.location.href = "/user";
+        } else {
+          document.body.innerHTML = `<h2>No assigned role</h2><a href='/.auth/logout'>Logout</a>`;
+        }
+      })
+      .catch((err) => {
+        console.error("Login error:", err);
+        window.location.href = "/index.html";
+      });
+  </script>
+</body>
+</html>
