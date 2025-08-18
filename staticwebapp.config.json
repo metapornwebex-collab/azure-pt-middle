@@ -1,0 +1,36 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "allowedRoles": ["anonymous"],
+      "serve": "/index.html"
+    },
+    {
+      "route": "/admin",
+      "allowedRoles": ["Admin"],
+      "serve": "https://<admin-app>.azurestaticapps.net"
+    },
+    {
+      "route": "/sales",
+      "allowedRoles": ["Sales"],
+      "serve": "https://<sales-app>.azurestaticapps.net"
+    },
+    {
+      "route": "/user",
+      "allowedRoles": ["User"],
+      "serve": "https://<user-app>.azurestaticapps.net"
+    },
+    {
+      "route": "/login",
+      "serve": "/login.html"
+    },
+    {
+      "route": "/logout",
+      "serve": "/logout.html"
+    },
+    {
+      "route": "/*",
+      "serve": "/404.html"
+    }
+  ]
+}
