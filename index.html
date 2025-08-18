@@ -2,46 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login Portal</title>
+  <title>Login Page</title>
 </head>
 <body>
-  <h1>Welcome to Login Portal</h1>
-
-  <div id="content">
-    <button onclick="location.href='/.auth/login/aad'">Login with Microsoft</button>
-  </div>
-
-  <script>
-    // เรียก API เพื่อตรวจสอบข้อมูลผู้ใช้
-    fetch('/.auth/me')
-      .then(res => res.json())
-      .then(data => {
-        const user = data.clientPrincipal;
-
-        if (user) {
-          document.getElementById("content").innerHTML = `
-            <p>Hello, ${user.userDetails}!</p>
-            <p>Your roles: ${user.userRoles.join(', ')}</p>
-            <button onclick="location.href='/.auth/logout'">Logout</button>
-          `;
-
-          // ตรวจ role แล้ว redirect ไปยัง app ที่เหมาะสม
-          const roles = user.userRoles;
-
-          if (roles.includes("Admin")) {
-            window.location.href = "/admin";
-          } else if (roles.includes("Sales")) {
-            window.location.href = "/sales";
-          } else if (roles.includes("User")) {
-            window.location.href = "/user";
-          }
-        }
-      })
-      .catch(err => {
-        console.error("Not logged in:", err);
-      });
-  </script>
+  <h1>Welcome</h1>
+  <a href="/.auth/login/aad">Login with Microsoft Entra ID</a>
 </body>
 </html>
-
