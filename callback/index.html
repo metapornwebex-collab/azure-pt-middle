@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Callback</title>
+  <title>Azure Login Portal</title>
 </head>
 <body>
-  <h2>Login Callback Page</h2>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    if (code) {
-      document.body.innerHTML = `<h3>Login Success ✅</h3><p>Authorization Code: ${code}</p>`;
-    } else {
-      document.body.innerHTML = `<h3>Login Failed ❌</h3>`;
-    }
-  </script>
+  <h1>🚪 Central Login Portal</h1>
+  <a href="https://login.microsoftonline.com/5499f0bf-b8f8-446b-8ae3-cd33c30d3dc5/oauth2/v2.0/authorize?
+    client_id=a41fdcd2-5f51-4a88-a190-9af482ff0508
+    &response_type=id_token
+    &redirect_uri=https://witty-tree-0def4bd00.1.azurestaticapps.net/callback/index.html
+    &scope=openid profile email
+    &response_mode=fragment
+    &nonce=12345
+    &state=abc">
+    Login with Azure
+  </a>
 </body>
 </html>
