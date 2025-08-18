@@ -2,10 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Login Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    h1 {
+      color: #2a2a2a;
+    }
+    a.login-button {
+      display: inline-block;
+      padding: 12px 24px;
+      margin-top: 30px;
+      font-size: 16px;
+      background-color: #0078D4;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    a.login-button:hover {
+      background-color: #005a9e;
+    }
+  </style>
 </head>
 <body>
-  <h1>Welcome</h1>
-  <a href="/.auth/login/aad">Login with Microsoft Entra ID</a>
+
+  <h1>Login Portal</h1>
+  <p>Please log in using your Microsoft Entra ID</p>
+
+  <!-- Login link (Entra ID via Static Web App Auth) -->
+  <a class="login-button" href="/.auth/login/aad">Login with Microsoft</a>
+
 </body>
 </html>
