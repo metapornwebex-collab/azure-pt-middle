@@ -2,39 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Callback</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Redirecting…</title>
+  <style>
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0b1220;color:#e6edf3}
+    .wrap{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;gap:12px;flex-direction:column}
+    .hint{opacity:.8;font-size:14px;max-width:720px}
+    .err{color:#ffb4b4}
+    code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px}
+    .spinner{width:28px;height:28px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:spin .9s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    a.btn{color:#0b1220;background:#9ad6ff;text-decoration:none;padding:8px 14px;border-radius:8px;font-weight:600}
+  </style>
 </head>
 <body>
-  <h2>Redirecting...</h2>
+  <div class="wrap">
+    <div class="spinner" aria-hidden="true"></div>
+    <h1>Signing you in…</h1>
+    <p class="hint" id="msg">Reading your profile and roles, then choosing the right app.</p>
+    <div id="debug" class="hint" style="display:none"></div>
+  </div>
 
   <script>
-    // ตรวจสอบการ login
-    fetch("/.auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        const user = data.clientPrincipal;
+    // ---- EDITABLE: role → path mapping (must match your staticwebapp.config.json routes) ----
+    const roleRouteMap = {
+      admin: "/admin",
+      sales: "/sales",
+      user:  "/user"
+    };
 
-        if (!user) {
-          window.location.href = "/index.html";
+    // If a user has multiple roles, choose order here (first match wins)
+    const rolePriority = ["admin", "sales", "user"];
+
+    // Optional: where to send users with NO role (fallback)
+    const fallbackPath = "/user";
+
+    // Optional: where to send unauthenticated users (should hit SWA login)
+    const loginPath = "/.auth/login/aad?post_login_redirect_uri=/callback";
+
+    const $msg = document.getElementById("msg");
+    const $debug = document.getElementById("debug");
+
+    function setMsg(text, isError=false) {
+      $msg.textContent = text;
+      if (isError) $msg.classList.add("err");
+    }
+
+    function showDebug(obj) {
+      try {
+        $debug.style.display = "block";
+        $debug.innerHTML = "<details open><summary>Debug</summary><pre><code>" +
+          (typeof obj === "string" ? obj : JSON.stringify(obj, null, 2)) +
+          "</code></pre></details>";
+      } catch {}
+    }
+
+    async function getUserInfo(retry = 0) {
+      // SWA sets a secure cookie; same-origin fetch is enough
+      const res = await fetch("/.auth/me", { credentials: "same-origin", cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to load /.auth/me: " + res.status);
+      const json = await res.json();
+      // Sometimes SWA needs a short moment right after redirect—retry once
+      if ((!Array.isArray(json) || json.length === 0) && retry < 1) {
+        await new Promise(r => setTimeout(r, 500));
+        return getUserInfo(retry + 1);
+      }
+      return json;
+    }
+
+    function pickRole(user) {
+      // SWA returns roles as `userRoles` (from rolesSource or app roles)
+      const rolesRaw = (user?.userRoles || user?.identityProvider?.userRoles || []);
+      const roles = rolesRaw.map(String).map(r => r.toLowerCase());
+      showDebug({ rolesFromMe: rolesRaw, rolesNormalized: roles });
+
+      for (const r of rolePriority) {
+        if (roles.includes(r)) return r;
+      }
+      // No known role
+      return null;
+    }
+
+    (async () => {
+      try {
+        setMsg("Checking authentication…");
+        const data = await getUserInfo();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          // Not authenticated (or cookie not set yet) → go to login
+          setMsg("Not authenticated. Redirecting to login…");
+          window.location.replace(loginPath);
+          return;
         }
 
-        const roles = user.userRoles;
+        const user = data[0];
+        setMsg("Determining your role…");
+        const role = pickRole(user);
 
-        // Redirect ตาม role
-        if (roles.includes("Admin")) {
-          window.location.href = "/admin";
-        } else if (roles.includes("Sales")) {
-          window.location.href = "/sales";
-        } else if (roles.includes("User")) {
-          window.location.href = "/user";
-        } else {
-          document.body.innerHTML = `<h2>No assigned role</h2><a href='/.auth/logout'>Logout</a>`;
+        if (role && roleRouteMap[role]) {
+          const target = roleRouteMap[role];
+          setMsg(`Welcome! Sending you to ${role.toUpperCase()} app…`);
+          // Use replace() to avoid coming back here on Back button
+          window.location.replace(target);
+          return;
         }
-      })
-      .catch((err) => {
-        console.error("Login error:", err);
-        window.location.href = "/index.html";
-      });
+
+        // No matching role → fallback
+        setMsg("No role assigned. Sending you to the default app…");
+        window.location.replace(fallbackPath);
+      } catch (err) {
+        console.error(err);
+        setMsg("Cannot complete sign-in. Please try again or contact admin.", true);
+        showDebug(String(err));
+        // Render a manual retry link
+        const retry = document.createElement("p");
+        retry.innerHTML = `<a class="btn" href="${loginPath}">Try Sign-in Again</a>`;
+        document.body.querySelector(".wrap").appendChild(retry);
+      }
+    })();
   </script>
 </body>
 </html>
