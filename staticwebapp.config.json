@@ -7,26 +7,31 @@
     },
     {
       "route": "/admin",
-      "allowedRoles": ["Admin"],
-      "serve": "https://salmon-tree-0bec8db00.2.azurestaticapps.net"
+      "allowedRoles": ["admin"],
+      "redirect": "https://salmon-tree-0bec8db00.2.azurestaticapps.net"
     },
     {
       "route": "/sales",
-      "allowedRoles": ["Sales"],
-      "serve": "https://witty-hill-046f15c00.1.azurestaticapps.net"
+      "allowedRoles": ["sales"],
+      "redirect": "https://witty-hill-046f15c00.1.azurestaticapps.net"
     },
     {
       "route": "/user",
-      "allowedRoles": ["User"],
-      "serve": "https://red-field-013434800.1.azurestaticapps.net"
+      "allowedRoles": ["user"],
+      "redirect": "https://red-field-013434800.1.azurestaticapps.net"
+    },
+    {
+      "route": "/callback",
+      "allowedRoles": ["authenticated"],
+      "serve": "/callback.html"
     },
     {
       "route": "/login",
-      "serve": "/login.html"
+      "redirect": "/.auth/login/aad?post_login_redirect_uri=/callback"
     },
     {
       "route": "/logout",
-      "serve": "/logout.html"
+      "redirect": "/.auth/logout"
     },
     {
       "route": "/*",
